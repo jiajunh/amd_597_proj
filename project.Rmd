@@ -6,7 +6,9 @@ output: pdf_document
 ---
 
 ```{r}
-load(file='/Users/jiajunh/Desktop/ams_597/amd_597_proj
-/data.rda')
+data = load(file='data.rda')
+data = da36498.1002
+str(data)
+
 ```
 
