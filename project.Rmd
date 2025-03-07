@@ -9,6 +9,10 @@ output: pdf_document
 # Load data
 data = load(file='36498-7001-Data.rda')
 data = da36498.7001
-head(data)
+# data$R07R_A_AX0082_01
+for (name in names(data)) {
+  name
+}
+
 ```
 
