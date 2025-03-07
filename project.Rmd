@@ -1,0 +1,12 @@
+---
+title: "project"
+author: "Jiajun Hong"
+date: "2025-03-07"
+output: pdf_document
+---
+
+```{r}
+load(file='/Users/jiajunh/Desktop/ams_597/amd_597_proj
+/data.rda')
+```
+
