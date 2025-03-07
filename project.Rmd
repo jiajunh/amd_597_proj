@@ -6,9 +6,9 @@ output: pdf_document
 ---
 
 ```{r}
-data = load(file='data.rda')
-data = da36498.1002
-str(data)
-
+# Load data
+data = load(file='36498-7001-Data.rda')
+data = da36498.7001
+head(data)
 ```
 
