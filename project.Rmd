@@ -10,9 +10,95 @@ output: pdf_document
 data = load(file='36498-7001-Data.rda')
 data = da36498.7001
 # data$R07R_A_AX0082_01
-for (name in names(data)) {
-  name
+f = c()
+for (name in colnames(data)) {
+  f = c(f, sum(!is.na(data[name])) / nrow(data))
 }
 
+temp = data.frame("not_na"=f, "name"=colnames(data))
+ordered = temp[order(temp$not_na, decreasing = TRUE), ]
+ordered
+
+```
+
+```{r}
+# data2 = load(file='36498-7002-Data.rda')
+# data2 = da36498.7002
+# f2 = c()
+# for (name in colnames(data2)) {
+#   f2 = c(f2, sum(!is.na(data2[name]))/nrow(data2))
+# }
+# temp2 = data.frame("not_na"=f2, "name"=colnames(data2))
+# ordered2 = temp2[order(temp2$not_na, decreasing = TRUE), ]
+# ordered2
+```
+
+```{r}
+library(tidyverse)
+library(caret) # for data partitioning/ confusion matrix
+library(MASS)
+
+test_data = data[,c("R07R_A_NUMDAYS_CIGS", "R07R_A_AX0066_V3", "R07R_A_AM0030", "R07R_A_BMI", "R07R_A_AX0093", "R07R_A_SEXORIENT2", "R07R_A_AX0691")]
+nrow(test_data)
+
+test_data = na.omit(test_data)
+nrow(test_data)
+
+str(test_data)
+
+
+set.seed(123)
+training.samples = test_data$R07R_A_NUMDAYS_CIGS %>% createDataPartition(p = 0.75, list = FALSE)
+train.data = test_data[training.samples, ]
+test.data = test_data[-training.samples, ]
+
+
+# summary(train.data)
+
+full = lm(R07R_A_NUMDAYS_CIGS ~., data = train.data)
+pred = predict(full, test.data)
+rmse = sqrt(mean((pred - test.data$R07R_A_NUMDAYS_CIGS)^2))
+rmse
+cor(test.data$R07R_A_NUMDAYS_CIGS, pred)^2
+
+sum(test.data$R07R_A_NUMDAYS_CIGS==30) / nrow(test.data)
+sum(test_data$R07R_A_NUMDAYS_CIGS==30) / nrow(test_data)
+
+```
+```{r}
+
+cols = c("R07R_A_P30D_CIGS", "R07R_A_AM0018_V2", "R07R_A_AM0030", "R07R_A_AX0066_V3", "R07R_A_SEX", "R07R_A_BMI", "R07R_A_AM0026_V2", "R07R_A_AX0093", "R07R_A_CUR_ESTD_EPRODS")
+
+test_data = data[,c("R07R_A_P30D_CIGS", "R07R_A_AM0018_V2", "R07R_A_AM0030", "R07R_A_AX0066_V3", "R07R_A_SEX", "R07R_A_BMI", "R07R_A_AM0026_V2", "R07R_A_AX0093", "R07R_A_CUR_ESTD_EPRODS")]
+nrow(test_data)
+
+# f = c()
+# for (name in cols) {
+#   f = c(f, sum(!is.na(data[name])) / nrow(data))
+# }
+
+test_data = na.omit(test_data)
+nrow(test_data)
+# 
+
+str(test_data)
+
+
+set.seed(123)
+training.samples = test_data$R07R_A_P30D_CIGS %>% createDataPartition(p = 0.75, list = FALSE)
+train.data = test_data[training.samples, ]
+test.data = test_data[-training.samples, ]
+
+full = glm(R07R_A_P30D_CIGS ~., data = train.data, family = binomial)
+pred = predict(full, test.data)
+predicted.classes <- ifelse(pred > 0.5, levels(test.data$R07R_A_P30D_CIGS)[2], 
+                                        levels(test.data$R07R_A_P30D_CIGS)[1])
+predicted.classes <- factor(predicted.classes, levels =levels(test.data$R07R_A_P30D_CIGS))
+
+# Calculate accuracy
+acc <- sum(predicted.classes == test.data$R07R_A_P30D_CIGS) / nrow(test.data)
+acc
+
+summary(full)
 ```
 
